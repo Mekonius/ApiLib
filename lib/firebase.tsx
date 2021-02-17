@@ -18,12 +18,21 @@ const firebaseConfig = {
       firebase.initializeApp(firebaseConfig);
   }
 
-  
 
   export const auth = firebase.auth();
+  export const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp;
   export const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
   export const firestore = firebase.firestore();
   export const storage = firebase.storage();
+  export const fromMillis = firebase.firestore.Timestamp.fromMillis;
+
+
+  ///Helper functions
+
+  /**
+   * Get a users/{uid} document with username
+   * @param {string} username 
+   */
 
   export async function getUserWithUsername(username) {
       const userRef = firestore.collection('users');
@@ -32,11 +41,16 @@ const firebaseConfig = {
       return userDoc;
   }
 
+  /**
+   * 
+   * @param {DocumentSnapShot} doc 
+   */
+
   export function postToJSON(doc){
       const data = doc.data();
       return {
           ...data,
-          createdAt: data.createdAt.toMillis(),
-          updatedAt: data.updated.toMillis(),
+          createdAt: data.createdAt.toMillis() || 0,
+          updatedAt: data.updated.toMillis() || 0,
       };
   }
