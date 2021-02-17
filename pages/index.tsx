@@ -10,7 +10,7 @@ const LIMIT = 10;
 export async function getServerSideProps(context) {
   const postsQuery = firestore
     .collectionGroup('posts')
-    .where('published', '==', 'true')
+    .where('published', '==', true)
     .orderBy('createdAt', 'desc')
     .limit(LIMIT);
 
@@ -31,20 +31,21 @@ export default function Home(props) {
   const getMorePosts = async () => {
     setLoading(true);
     const last = posts[posts.length - 1];
-
     const cursor = typeof last.createdAt === 'number' ? fromMillis(last.createdAt) : last.createdAt;
 
     const query = firestore
       .collectionGroup('posts')
-      .where('published', '==', 'true')
+      .where('published', '==', true)
       .orderBy('createdAt', 'desc')
       .startAfter(cursor)
       .limit(LIMIT);
+
 
     const newPosts = (await query.get()).docs.map((doc) => doc.data());
 
     setPosts(posts.concat(newPosts));
     setLoading(false);
+
 
     if (newPosts.length < LIMIT) {
       setPostsEnd(true);
